@@ -24,7 +24,6 @@ io.on("connection", (socket) => {
 
     socket.on("register", (number) => {
         users[number] = socket.id;
-        console.log(users);
     });
 
     socket.on("call-user", (data) => {
@@ -34,6 +33,7 @@ io.on("connection", (socket) => {
 
         if (calleeSocketId) {
             io.to(calleeSocketId).emit("incoming-call", {
+                calleeId,
                 callerInfo,
                 signalData,
             });
@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("answerCall", (data) => {
-        io.to(data.to).emit("callAccepted", data.signal);
+        io.to(users[data.to]).emit("callAccepted", data.signal);
     });
 
     socket.on("disconnect", () => {
@@ -51,7 +51,6 @@ io.on("connection", (socket) => {
                 break;
             }
         }
-        console.log("A user disconnected");
     });
 });
 
